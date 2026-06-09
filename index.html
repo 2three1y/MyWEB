@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MasterDnsVPN - Secure DNS-Based VPN Routing</title>
+    <style>
+        :root {
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --header-bg: #2c3e50;
+            --header-text: #fff;
+            --accent-color: #3498db;
+            --card-bg: #fff;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        section {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            color: var(--header-bg);
+        }
+
+        header h1 {
+            color: var(--header-text);
+            margin: 0;
+        }
+
+        code {
+            background: #eee;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Accessibility improvements */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        a:hover, a:focus {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header role="banner">
+        <h1>MasterDnsVPN</h1>
+        <p>Advanced Secure DNS-Based VPN Routing</p>
+    </header>
+
+    <main id="main-content" role="main">
+        <section aria-labelledby="about-heading">
+            <h2 id="about-heading">About the Project</h2>
+            <p>
+                MasterDnsVPN is a specialized tool designed to optimize and secure your network traffic by combining the power of encrypted DNS with Virtual Private Network (VPN) routing. It ensures that your DNS queries remain private while efficiently routing traffic through designated secure tunnels.
+            </p>
+        </section>
+
+        <section aria-labelledby="architecture-heading">
+            <h2 id="architecture-heading">Architecture</h2>
+            <p>The MasterDnsVPN architecture is built on three main pillars:</p>
+            <ul role="list">
+                <li><strong>DNS Resolver:</strong> A local, high-performance DNS resolver that supports DoH (DNS over HTTPS) and DoT (DNS over TLS).</li>
+                <li><strong>Routing Engine:</strong> Intelligent traffic analysis that determines which requests should bypass the VPN for speed and which require the tunnel for security.</li>
+                <li><strong>VPN Integration:</strong> Seamless integration with standard protocols like WireGuard and OpenVPN.</li>
+            </ul>
+        </section>
+
+        <section aria-labelledby="how-it-works-heading">
+            <h2 id="how-it-works-heading">How It Works</h2>
+            <ol>
+                <li>The user makes a network request.</li>
+                <li>The <strong>DNS Resolver</strong> intercepts the query and fetches the IP via a secure channel.</li>
+                <li>The <strong>Routing Engine</strong> checks the destination against user-defined rules.</li>
+                <li>Traffic is encrypted and sent through the <strong>VPN Tunnel</strong> or the direct gateway.</li>
+            </ol>
+        </section>
+
+        <section aria-labelledby="setup-heading">
+            <h2 id="setup-heading">Get Started</h2>
+            <p>To deploy your own MasterDnsVPN instance, follow the instructions in our <a href="https://github.com/2three1y/master-dns-vpn-web">GitHub Repository</a>.</p>
+        </section>
+    </main>
+
+    <footer role="contentinfo">
+        <p>&copy; 2026 2three1y. Built with accessibility in mind.</p>
+    </footer>
+
+</body>
+</html>
