@@ -6,15 +6,19 @@
     <title>MasterDnsVPN - Secure DNS-Based VPN & Tor Routing</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --text-color: #f8fafc;
-            --header-bg: #1e293b;
-            --header-text: #f8fafc;
-            --accent-color: #38bdf8;
-            --card-bg: #1e293b;
-            --tor-purple: #a855f7;
-            --input-bg: #334155;
-            --border-color: #475569;
+            --bg-color: #f4f4f9;
+            --text-color: #333;
+            --header-bg: #2c3e50;
+            --header-text: #fff;
+            --accent-color: #3498db;
+            --card-bg: #fff;
+            --tor-purple: #7d4698;
+            /* Accessible Menu Theme: Dark Slate/Blue */
+            --menu-bg: #1e293b;
+            --menu-text: #f1f5f9;
+            --menu-border: #334155;
+            --menu-accent: #38bdf8;
+            --menu-hover: #334155;
         }
 
         body {
@@ -27,87 +31,179 @@
 
         header {
             background-color: var(--header-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .nav-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 1rem;
-        }
-
-        .logo {
-            font-weight: 800;
-            font-size: 1.5rem;
-            color: var(--accent-color);
-            text-decoration: none;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 1.5rem;
-            margin: 0;
-            padding: 0;
-            align-items: center;
-        }
-
-        .more-container {
+            color: var(--header-text);
+            padding: 3rem 1rem;
+            text-align: center;
             position: relative;
         }
 
-        .menu-btn {
-            background: none;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .cta-button {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-top: 1.5rem;
+            text-decoration: none;
+            transition: transform 0.2s, background-color 0.2s;
         }
 
-        .menu-btn:hover, .menu-btn:focus {
-            background: var(--input-bg);
-            border-color: var(--accent-color);
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            margin-top: 0.5rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-            display: none;
-            min-width: 160px;
-            flex-direction: column;
-            z-index: 110;
-        }
-
-        .dropdown-menu.show {
-            display: flex;
-        }
-
-        .dropdown-menu a {
-            padding: 0.75rem 1rem;
-            color: var(--text-color);
+        .cta-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
             text-decoration: none;
         }
 
-        .dropdown-menu a:hover, .dropdown-menu a:focus {
-            background: var(--input-bg);
+        /* Menu Button Styles */
+        .menu-container {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .more-trigger {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .more-trigger:hover, .more-trigger:focus {
+            background: rgba(255, 255, 255, 0.2);
+            outline: 2px solid var(--menu-accent);
+            outline-offset: 2px;
+        }
+
+        /* Accessible Menu Card */
+        .menu-card {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 10px;
+            background: var(--menu-bg);
+            color: var(--menu-text);
+            border: 1px solid var(--menu-border);
+            border-radius: 8px;
+            width: 280px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 100;
+            padding: 1rem;
+            text-align: left;
+            animation: slideIn 0.2s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-card[hidden] {
+            display: none;
+        }
+
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--menu-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .menu-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--menu-accent);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--menu-text);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background: var(--menu-hover);
+        }
+
+        .menu-section {
+            margin-bottom: 1.2rem;
+        }
+
+        .menu-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+        }
+
+        /* Protocol Selector */
+        .protocol-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .menu-item-btn {
+            flex: 1;
+            background: var(--menu-border);
+            border: 1px solid transparent;
+            color: var(--menu-text);
+            padding: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .menu-item-btn:hover, .menu-item-btn:focus {
+            background: var(--menu-hover);
+            border-color: var(--menu-accent);
             outline: none;
+        }
+
+        .menu-item-btn[aria-pressed="true"] {
+            background: var(--menu-accent);
+            color: var(--menu-bg);
+            font-weight: bold;
+        }
+
+        /* DoH Resolver */
+        .resolver-group {
+            display: flex;
+            gap: 0.2rem;
+        }
+
+        .resolver-input {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid var(--menu-border);
+            color: white;
+            padding: 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .resolver-btn {
+            background: var(--menu-accent);
+            border: none;
+            color: var(--menu-bg);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
         }
 
         main {
@@ -118,151 +214,83 @@
 
         section {
             background: var(--card-bg);
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        h1, h2, h3 {
-            color: var(--accent-color);
-            margin-top: 0;
-        }
-
-        .hero {
-            text-align: center;
-            padding: 4rem 1rem;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: #94a3b8;
-        }
-
-        /* Config Generator Styles */
-        .config-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .option-card {
-            background: var(--input-bg);
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        .option-card label {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        select, input[type="text"] {
-            width: 100%;
-            padding: 0.75rem;
-            margin-top: 0.5rem;
-            background: var(--bg-color);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-        }
-
-        .btn {
-            background: var(--accent-color);
-            color: var(--bg-color);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-        }
-
-        /* DoH Resolver Styles */
-        .resolver-box {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .resolver-box input {
-            flex-grow: 1;
-            margin-top: 0;
-        }
-
-        #resolve-result {
-            background: var(--bg-color);
-            padding: 1rem;
-            border-radius: 8px;
-            min-height: 100px;
-            font-family: monospace;
-            white-space: pre-wrap;
-            border: 1px solid var(--border-color);
-        }
-
-        /* Update Modal / Toast Styles */
-        #update-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal {
-            background: var(--card-bg);
-            width: 90%;
-            max-width: 400px;
             padding: 1.5rem;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            color: var(--header-bg);
+        }
+
+        header h1 {
+            color: var(--header-text);
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .tor-tag {
+            background-color: var(--tor-purple);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+
+        code {
+            background: #eee;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            margin-bottom: 1.5rem;
+            padding-left: 3rem;
             position: relative;
         }
 
-        .modal h2 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .modal-close {
+        .step-list li::before {
+            content: attr(data-step);
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            cursor: pointer;
+            left: 0;
+            top: 0;
+            background: var(--accent-color);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
         }
 
         footer {
             text-align: center;
-            padding: 3rem;
-            color: #64748b;
+            padding: 2rem;
+            font-size: 0.9rem;
+            color: #666;
         }
 
-        /* Screen Reader Utility */
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        a:hover, a:focus {
+            text-decoration: underline;
+        }
+
+        /* Screen Reader Announcer */
         .sr-only {
             position: absolute;
             width: 1px;
@@ -279,202 +307,227 @@
 <body>
 
     <header role="banner">
-        <div class="nav-container">
-            <a href="#" class="logo">MasterDnsVPN</a>
-            <nav role="navigation" aria-label="Main menu">
-                <ul>
-                    <li><a href="#doh-tool">Resolver</a></li>
-                    <li><a href="#config-tool">Generator</a></li>
-                    <li class="more-container">
-                        <button id="more-btn" class="menu-btn" aria-haspopup="true" aria-expanded="false" aria-controls="more-menu">
-                            More <span>▼</span>
-                        </button>
-                        <div id="more-menu" class="dropdown-menu" role="menu">
-                            <a href="#about-section" role="menuitem">About Project</a>
-                            <a href="https://github.com/2three1y/MyWEB" role="menuitem" target="_blank">GitHub</a>
-                            <a href="#" role="menuitem">Documentation</a>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
+        <div class="menu-container">
+            <button 
+                id="more-menu-btn" 
+                class="more-trigger"
+                aria-haspopup="menu" 
+                aria-expanded="false" 
+                aria-controls="settings-menu"
+                aria-label="Quick Settings"
+            >
+                Settings ⚙️
+            </button>
+
+            <div id="settings-menu" class="menu-card" role="menu" aria-labelledby="more-menu-btn" hidden>
+                <div class="menu-header">
+                    <h3>Quick Config</h3>
+                    <button id="close-menu-btn" class="close-btn" aria-label="Close menu">×</button>
+                </div>
+
+                <div class="menu-section">
+                    <span class="menu-label">VPN Protocol</span>
+                    <div class="protocol-options">
+                        <button role="menuitem" class="menu-item-btn" data-action="wireguard" aria-pressed="true">WireGuard</button>
+                        <button role="menuitem" class="menu-item-btn" data-action="openvpn" aria-pressed="false">OpenVPN</button>
+                    </div>
+                </div>
+
+                <div class="menu-section">
+                    <span class="menu-label">DoH Resolver</span>
+                    <div class="resolver-group">
+                        <input type="text" id="doh-input" class="resolver-input" placeholder="domain.com" aria-label="Domain to resolve">
+                        <button role="menuitem" class="resolver-btn" data-action="resolve">Resolve</button>
+                    </div>
+                </div>
+            </div>
         </div>
+
+        <h1>MasterDnsVPN</h1>
+        <p>Advanced Secure DNS-Based VPN & Tor Routing</p>
+        <a href="#setup-flow" class="cta-button">Get Started Now</a>
     </header>
 
-    <main id="main-content">
-        <section class="hero" id="about-section">
-            <h1>Stay Private.</h1>
-            <p>Advanced Secure DNS-Based VPN & Tor Routing Gateway.</p>
+    <main id="main-content" role="main">
+        <section aria-labelledby="about-heading">
+            <h2 id="about-heading">About the Project</h2>
+            <p>
+                MasterDnsVPN is a specialized tool designed to optimize and secure your network traffic by combining the power of encrypted DNS, Virtual Private Network (VPN) routing, and Tor integration. It ensures that your DNS queries remain private while efficiently routing traffic through designated secure tunnels or the Onion network.
+            </p>
         </section>
 
-        <section id="config-tool" aria-labelledby="config-title">
-            <h2 id="config-title">Config Generator</h2>
-            <p>Generate your custom <code>config.yaml</code> for your local node.</p>
-            <div class="config-grid">
-                <div class="option-card">
-                    <label>
-                        <input type="checkbox" id="tor-toggle" checked> Enable Tor
-                    </label>
-                </div>
-                <div class="option-card">
-                    <label for="vpn-proto">Protocol</label>
-                    <select id="vpn-proto">
-                        <option value="wireguard">WireGuard</option>
-                        <option value="openvpn">OpenVPN</option>
-                    </select>
-                </div>
-                <div class="option-card">
-                    <label for="dns-server">DNS Provider</label>
-                    <select id="dns-server">
-                        <option value="cloudflare">Cloudflare (1.1.1.1)</option>
-                        <option value="google">Google (8.8.8.8)</option>
-                        <option value="quad9">Quad9 (9.9.9.9)</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn" onclick="generateConfig()">Download config.yaml</button>
+        <section aria-labelledby="architecture-heading">
+            <h2 id="architecture-heading">Architecture</h2>
+            <p>The MasterDnsVPN architecture is built on four main pillars:</p>
+            <ul role="list">
+                <li><strong>DNS Resolver:</strong> High-performance local resolution with DoH/DoT capabilities.</li>
+                <li><strong>Routing Engine:</strong> Intelligent traffic analysis for optimized tunnel routing.</li>
+                <li><strong>VPN Integration:</strong> Native support for secure, modern tunneling protocols.</li>
+                <li><strong>Tor & Onion Routing:</strong> <span class="tor-tag">Privacy Focused</span> Integrated support for .onion domains.</li>
+            </ul>
         </section>
 
-        <section id="doh-tool" aria-labelledby="resolver-title">
-            <h2 id="resolver-title">DoH Resolver</h2>
-            <p>Resolve domain names using DNS-over-HTTPS (Cloudflare API).</p>
-            <div class="resolver-box">
-                <input type="text" id="domain-input" placeholder="example.com" aria-label="Domain to resolve">
-                <button class="btn" style="width: auto;" onclick="resolveDNS()">Resolve</button>
-            </div>
-            <div id="resolve-result" role="region" aria-live="polite" aria-label="Resolution Results">
-                Enter a domain and click resolve...
-            </div>
+        <section aria-labelledby="tor-heading">
+            <h2 id="tor-heading">Privacy & Tor Integration</h2>
+            <p>Elevate your anonymity with built-in Tor support. MasterDnsVPN allows you to:</p>
+            <ul>
+                <li><strong>Access .onion Services:</strong> Resolve and route .onion addresses natively.</li>
+                <li><strong>Traffic Masking:</strong> Route packets through the Tor network to hide origin IP.</li>
+                <li><strong>Metadata Protection:</strong> Encapsulate DNS lookups within encrypted circuits.</li>
+            </ul>
+        </section>
+
+        <section id="setup-flow" aria-labelledby="setup-heading">
+            <h2 id="setup-heading">Get Started Flow</h2>
+            <p>Deploy your private gateway in three simple steps:</p>
+            <ol class="step-list">
+                <li data-step="1">
+                    <strong>Clone & Install:</strong>
+                    <p>Pull the latest build from our <a href="https://github.com/2three1y/MyWEB">GitHub Repository</a>.</p>
+                    <code>git clone https://github.com/2three1y/MyWEB.git</code>
+                </li>
+                <li data-step="2">
+                    <strong>Configure:</strong>
+                    <p>Edit <code>config.yaml</code> to define credentials and enable Tor.</p>
+                </li>
+                <li data-step="3">
+                    <strong>Launch:</strong>
+                    <p>Start the service using Docker Compose.</p>
+                    <code>docker-compose up -d</code>
+                </li>
+            </ol>
         </section>
     </main>
 
     <footer role="contentinfo">
-        <p>&copy; 2026 2three1y. Built for Privacy & Accessibility.</p>
+        <p>&copy; 2026 2three1y. Built with privacy and accessibility in mind.</p>
     </footer>
 
-    <!-- Update Modal -->
-    <div id="update-modal-overlay" role="presentation">
-        <div id="update-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
-            <button class="modal-close" id="close-modal" aria-label="Close updates">×</button>
-            <h2 id="modal-title">Latest Updates</h2>
-            <p id="modal-desc">We've added a new Config Generator and DoH Resolver tool to help you stay secure.</p>
-            <button class="btn" onclick="closeModal()">Got it</button>
-        </div>
-    </div>
+    <div id="sr-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <script>
-        // Menu Popup Logic
-        const moreBtn = document.getElementById('more-btn');
-        const moreMenu = document.getElementById('more-menu');
+        class AccessibleMenuButton {
+            constructor(buttonId, menuId, closeId) {
+                this.button = document.getElementById(buttonId);
+                this.menu = document.getElementById(menuId);
+                this.closeBtn = document.getElementById(closeId);
+                this.announcer = document.getElementById('sr-announcer');
+                this.menuItems = this.menu.querySelectorAll('[role="menuitem"]');
+                this.isOpen = false;
+                this.focusedIndex = -1;
 
-        moreBtn.addEventListener('click', (e) => {
-            const expanded = moreBtn.getAttribute('aria-expanded') === 'true';
-            moreBtn.setAttribute('aria-expanded', !expanded);
-            moreMenu.classList.toggle('show');
-            if (!expanded) {
-                moreMenu.querySelector('a').focus();
-            }
-        });
-
-        // Close menu on click outside
-        window.addEventListener('click', (e) => {
-            if (!moreBtn.contains(e.target) && !moreMenu.contains(e.target)) {
-                moreBtn.setAttribute('aria-expanded', 'false');
-                moreMenu.classList.remove('show');
-            }
-        });
-
-        // Config Generator Logic
-        function generateConfig() {
-            const tor = document.getElementById('tor-toggle').checked;
-            const proto = document.getElementById('vpn-proto').value;
-            const dns = document.getElementById('dns-server').value;
-            
-            const yamlContent = `version: 1.0\ntor_enabled: ${tor}\nprotocol: ${proto}\ndns_provider: ${dns}\ncreated_at: ${new Date().toISOString()}`;
-            
-            const blob = new Blob([yamlContent], { type: 'text/yaml' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'config.yaml';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // DoH Resolver Logic
-        async function resolveDNS() {
-            const domain = document.getElementById('domain-input').value;
-            const resultDiv = document.getElementById('resolve-result');
-            
-            if (!domain) {
-                resultDiv.innerText = "Error: Please enter a domain.";
-                return;
+                this.init();
             }
 
-            resultDiv.innerText = "Resolving...";
-            
-            try {
-                const response = await fetch(`https://cloudflare-dns.com/dns-query?name=${domain}&type=A`, {
-                    headers: { 'Accept': 'application/dns-json' }
+            init() {
+                this.button.addEventListener('click', () => this.toggle());
+                this.closeBtn.addEventListener('click', () => this.close());
+
+                this.menuItems.forEach((item, index) => {
+                    item.addEventListener('click', (e) => this.handleItemSelect(e, index));
+                    item.addEventListener('keydown', (e) => this.handleItemKeydown(e, index));
                 });
-                const data = await response.json();
+
+                document.addEventListener('click', (e) => {
+                    if (!this.button.contains(e.target) && !this.menu.contains(e.target)) {
+                        this.close();
+                    }
+                });
+
+                this.button.addEventListener('keydown', (e) => this.handleButtonKeydown(e));
                 
-                if (data.Answer) {
-                    const results = data.Answer.map(ans => `${ans.name} -> ${ans.data} (TTL: ${ans.TTL})`).join('\n');
-                    resultDiv.innerText = results;
-                } else {
-                    resultDiv.innerText = "No A records found for this domain.";
+                // Escape key should close menu even if focus is on non-menuitem elements (like input)
+                this.menu.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') this.close();
+                });
+            }
+
+            toggle() {
+                this.isOpen ? this.close() : this.open();
+            }
+
+            open() {
+                this.isOpen = true;
+                this.menu.hidden = false;
+                this.button.setAttribute('aria-expanded', 'true');
+                this.focusedIndex = -1;
+                this.announce('Menu opened');
+                // Focus trap logic usually goes here, but we'll focus first item
+                setTimeout(() => this.focusItem(0), 50);
+            }
+
+            close() {
+                if (!this.isOpen) return;
+                this.isOpen = false;
+                this.menu.hidden = true;
+                this.button.setAttribute('aria-expanded', 'false');
+                this.button.focus();
+                this.announce('Menu closed');
+            }
+
+            handleButtonKeydown(e) {
+                if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.open();
                 }
-            } catch (err) {
-                resultDiv.innerText = "Failed to resolve domain. Check your connection.";
+            }
+
+            handleItemKeydown(e, index) {
+                switch (e.key) {
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        this.focusItem(Math.min(index + 1, this.menuItems.length - 1));
+                        break;
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        this.focusItem(Math.max(index - 1, 0));
+                        break;
+                    case 'Tab':
+                        // Simple focus trap: if at end, go back to close button or wrap
+                        if (!e.shiftKey && index === this.menuItems.length - 1) {
+                            // Let default tab happen but we could intercept
+                        }
+                        break;
+                }
+            }
+
+            focusItem(index) {
+                this.focusedIndex = index;
+                if (this.menuItems[index]) {
+                    this.menuItems[index].focus();
+                }
+            }
+
+            handleItemSelect(e, index) {
+                const item = this.menuItems[index];
+                const action = item.getAttribute('data-action');
+                
+                if (action === 'wireguard' || action === 'openvpn') {
+                    // Protocol toggle logic
+                    this.menuItems.forEach(btn => {
+                        if (btn.getAttribute('data-action') === 'wireguard' || btn.getAttribute('data-action') === 'openvpn') {
+                            btn.setAttribute('aria-pressed', 'false');
+                        }
+                    });
+                    item.setAttribute('aria-pressed', 'true');
+                    this.announce(`${action} selected`);
+                } else if (action === 'resolve') {
+                    const input = document.getElementById('doh-input');
+                    this.announce(`Resolving ${input.value || 'default domain'}`);
+                }
+                
+                // Only close for primary actions, but here we stay open for config unless explicit close
+                // this.close(); 
+            }
+
+            announce(message) {
+                this.announcer.textContent = message;
             }
         }
 
-        // Modal Logic
-        const modalOverlay = document.getElementById('update-modal-overlay');
-        const closeModalBtn = document.getElementById('close-modal');
-        let lastFocusedElement;
-
-        function showModal() {
-            lastFocusedElement = document.activeElement;
-            modalOverlay.style.display = 'flex';
-            document.getElementById('update-modal').focus();
-            
-            // Trap focus
-            modalOverlay.addEventListener('keydown', trapFocus);
-        }
-
-        function closeModal() {
-            modalOverlay.style.display = 'none';
-            modalOverlay.removeEventListener('keydown', trapFocus);
-            if (lastFocusedElement) lastFocusedElement.focus();
-        }
-
-        function trapFocus(e) {
-            if (e.key === 'Escape') closeModal();
-            if (e.key !== 'Tab') return;
-
-            const focusableElements = modalOverlay.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-            const first = focusableElements[0];
-            const last = focusableElements[focusableElements.length - 1];
-
-            if (e.shiftKey) {
-                if (document.activeElement === first) {
-                    last.focus();
-                    e.preventDefault();
-                }
-            } else {
-                if (document.activeElement === last) {
-                    first.focus();
-                    e.preventDefault();
-                }
-            }
-        }
-
-        closeModalBtn.addEventListener('click', closeModal);
-
-        // Show update modal on load for demo
-        window.addEventListener('load', () => {
-            setTimeout(showModal, 1000);
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            new AccessibleMenuButton('more-menu-btn', 'settings-menu', 'close-menu-btn');
         });
     </script>
 </body>
