@@ -302,9 +302,79 @@
             white-space: nowrap;
             border-width: 0;
         }
+
+        /* Update Banner Styles */
+        .update-banner {
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2px solid #38bdf8;
+            font-size: 0.9rem;
+            z-index: 1000;
+            position: relative;
+        }
+
+        .update-banner[hidden] {
+            display: none;
+        }
+
+        .update-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .update-tag {
+            background: #38bdf8;
+            color: #0f172a;
+            padding: 0.1rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        .update-text {
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .update-close-btn {
+            background: none;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .update-close-btn:hover {
+            color: #f1f5f9;
+            border-color: #38bdf8;
+        }
+
+        @media (max-width: 600px) {
+            .update-banner {
+                padding: 0.5rem;
+            }
+            .update-tag {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- UPDATE_BANNER_PLACEHOLDER -->
 
     <header role="banner">
         <div class="menu-container">
@@ -525,9 +595,37 @@
             }
         }
 
+        function initUpdateBanner() {
+            const banner = document.getElementById('update-banner');
+            const announcer = document.getElementById('sr-announcer');
+            if (!banner) return;
+
+            const sha = banner.getAttribute('data-sha');
+            if (localStorage.getItem('dismissed-update-' + sha) !== 'true') {
+                banner.removeAttribute('hidden');
+            }
+
+            const closeBtn = document.getElementById('close-update-btn');
+            if (closeBtn) {
+                const dismiss = () => {
+                    localStorage.setItem('dismissed-update-' + sha, 'true');
+                    banner.setAttribute('hidden', '');
+                    if (announcer) announcer.textContent = 'Update banner dismissed';
+                };
+                closeBtn.addEventListener('click', dismiss);
+                closeBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        dismiss();
+                    }
+                });
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             new AccessibleMenuButton('more-menu-btn', 'settings-menu', 'close-menu-btn');
+            initUpdateBanner();
         });
     </script>
 </body>
