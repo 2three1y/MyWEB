@@ -95,6 +95,8 @@
             padding: 1rem;
             text-align: left;
             animation: slideIn 0.2s ease-out;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         @keyframes slideIn {
@@ -149,8 +151,8 @@
             color: #94a3b8;
         }
 
-        /* Protocol Selector */
-        .protocol-options {
+        /* Menu Item Options */
+        .options-row {
             display: flex;
             gap: 0.5rem;
         }
@@ -165,6 +167,7 @@
             cursor: pointer;
             font-size: 0.85rem;
             text-align: center;
+            transition: background 0.2s;
         }
 
         .menu-item-btn:hover, .menu-item-btn:focus {
@@ -179,31 +182,39 @@
             font-weight: bold;
         }
 
-        /* DoH Resolver */
-        .resolver-group {
+        /* Form Controls */
+        .resolver-group, .feedback-group {
             display: flex;
-            gap: 0.2rem;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        .resolver-input {
-            flex: 1;
+        .menu-input, .menu-textarea {
             background: #0f172a;
             border: 1px solid var(--menu-border);
             color: white;
-            padding: 0.4rem;
+            padding: 0.5rem;
             border-radius: 4px;
             font-size: 0.85rem;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .resolver-btn {
+        .menu-textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .primary-action-btn {
             background: var(--menu-accent);
             border: none;
             color: var(--menu-bg);
-            padding: 0.4rem 0.8rem;
+            padding: 0.5rem 1rem;
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
             font-size: 0.85rem;
+            text-align: center;
         }
 
         main {
@@ -302,79 +313,9 @@
             white-space: nowrap;
             border-width: 0;
         }
-
-        /* Update Banner Styles */
-        .update-banner {
-            background: #1e293b;
-            color: #f1f5f9;
-            padding: 0.75rem 1rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-bottom: 2px solid #38bdf8;
-            font-size: 0.9rem;
-            z-index: 1000;
-            position: relative;
-        }
-
-        .update-banner[hidden] {
-            display: none;
-        }
-
-        .update-content {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            max-width: 800px;
-            width: 100%;
-        }
-
-        .update-tag {
-            background: #38bdf8;
-            color: #0f172a;
-            padding: 0.1rem 0.5rem;
-            border-radius: 4px;
-            font-weight: 800;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            white-space: nowrap;
-        }
-
-        .update-text {
-            flex-grow: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .update-close-btn {
-            background: none;
-            border: 1px solid #334155;
-            color: #94a3b8;
-            cursor: pointer;
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 1.1rem;
-            transition: all 0.2s;
-        }
-
-        .update-close-btn:hover {
-            color: #f1f5f9;
-            border-color: #38bdf8;
-        }
-
-        @media (max-width: 600px) {
-            .update-banner {
-                padding: 0.5rem;
-            }
-            .update-tag {
-                display: none;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- UPDATE_BANNER_PLACEHOLDER -->
 
     <header role="banner">
         <div class="menu-container">
@@ -395,19 +336,39 @@
                     <button id="close-menu-btn" class="close-btn" aria-label="Close menu">×</button>
                 </div>
 
+                <!-- VPN Protocol Selection -->
                 <div class="menu-section">
                     <span class="menu-label">VPN Protocol</span>
-                    <div class="protocol-options">
+                    <div class="options-row" role="group" aria-label="Select VPN Protocol">
                         <button role="menuitem" class="menu-item-btn" data-action="wireguard" aria-pressed="true">WireGuard</button>
                         <button role="menuitem" class="menu-item-btn" data-action="openvpn" aria-pressed="false">OpenVPN</button>
                     </div>
                 </div>
 
+                <!-- Theme Selection -->
+                <div class="menu-section">
+                    <span class="menu-label">Theme Selection</span>
+                    <div class="options-row" role="group" aria-label="Select Theme">
+                        <button role="menuitem" class="menu-item-btn" data-action="light-theme" aria-pressed="false">☀️ Light</button>
+                        <button role="menuitem" class="menu-item-btn" data-action="dark-theme" aria-pressed="true">🌙 Dark</button>
+                    </div>
+                </div>
+
+                <!-- DoH Resolver -->
                 <div class="menu-section">
                     <span class="menu-label">DoH Resolver</span>
                     <div class="resolver-group">
-                        <input type="text" id="doh-input" class="resolver-input" placeholder="domain.com" aria-label="Domain to resolve">
-                        <button role="menuitem" class="resolver-btn" data-action="resolve">Resolve</button>
+                        <input type="text" id="doh-input" class="menu-input" placeholder="domain.com" aria-label="Domain to resolve">
+                        <button role="menuitem" class="primary-action-btn" data-action="resolve">Resolve Now</button>
+                    </div>
+                </div>
+
+                <!-- Feedback Section -->
+                <div class="menu-section">
+                    <span class="menu-label">Feedback</span>
+                    <div class="feedback-group">
+                        <textarea id="feedback-text" class="menu-textarea" placeholder="Describe your issue..." aria-label="Feedback content"></textarea>
+                        <button role="menuitem" class="primary-action-btn" data-action="submit-feedback">Send Feedback</button>
                     </div>
                 </div>
             </div>
@@ -505,8 +466,6 @@
                 });
 
                 this.button.addEventListener('keydown', (e) => this.handleButtonKeydown(e));
-                
-                // Escape key should close menu even if focus is on non-menuitem elements (like input)
                 this.menu.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') this.close();
                 });
@@ -520,9 +479,7 @@
                 this.isOpen = true;
                 this.menu.hidden = false;
                 this.button.setAttribute('aria-expanded', 'true');
-                this.focusedIndex = -1;
-                this.announce('Menu opened');
-                // Focus trap logic usually goes here, but we'll focus first item
+                this.announce('Settings menu opened');
                 setTimeout(() => this.focusItem(0), 50);
             }
 
@@ -532,7 +489,7 @@
                 this.menu.hidden = true;
                 this.button.setAttribute('aria-expanded', 'false');
                 this.button.focus();
-                this.announce('Menu closed');
+                this.announce('Settings menu closed');
             }
 
             handleButtonKeydown(e) {
@@ -552,12 +509,6 @@
                         e.preventDefault();
                         this.focusItem(Math.max(index - 1, 0));
                         break;
-                    case 'Tab':
-                        // Simple focus trap: if at end, go back to close button or wrap
-                        if (!e.shiftKey && index === this.menuItems.length - 1) {
-                            // Let default tab happen but we could intercept
-                        }
-                        break;
                 }
             }
 
@@ -573,21 +524,33 @@
                 const action = item.getAttribute('data-action');
                 
                 if (action === 'wireguard' || action === 'openvpn') {
-                    // Protocol toggle logic
-                    this.menuItems.forEach(btn => {
-                        if (btn.getAttribute('data-action') === 'wireguard' || btn.getAttribute('data-action') === 'openvpn') {
-                            btn.setAttribute('aria-pressed', 'false');
-                        }
-                    });
-                    item.setAttribute('aria-pressed', 'true');
-                    this.announce(`${action} selected`);
+                    this.updateButtonGroup(action, ['wireguard', 'openvpn']);
+                    this.announce(`${action === 'wireguard' ? 'WireGuard' : 'OpenVPN'} protocol selected`);
+                } else if (action === 'light-theme' || action === 'dark-theme') {
+                    this.updateButtonGroup(action, ['light-theme', 'dark-theme']);
+                    this.announce(`${action === 'light-theme' ? 'Light' : 'Dark'} theme selected`);
+                    // Here you would normally toggle a CSS class on body
                 } else if (action === 'resolve') {
-                    const input = document.getElementById('doh-input');
-                    this.announce(`Resolving ${input.value || 'default domain'}`);
+                    const val = document.getElementById('doh-input').value;
+                    this.announce(`Resolving ${val || 'domain'}...`);
+                } else if (action === 'submit-feedback') {
+                    const text = document.getElementById('feedback-text').value;
+                    if (text) {
+                        this.announce('Feedback sent. Thank you!');
+                        document.getElementById('feedback-text').value = '';
+                    } else {
+                        this.announce('Feedback field is empty.');
+                    }
                 }
-                
-                // Only close for primary actions, but here we stay open for config unless explicit close
-                // this.close(); 
+            }
+
+            updateButtonGroup(selectedAction, groupActions) {
+                this.menuItems.forEach(btn => {
+                    const act = btn.getAttribute('data-action');
+                    if (groupActions.includes(act)) {
+                        btn.setAttribute('aria-pressed', act === selectedAction ? 'true' : 'false');
+                    }
+                });
             }
 
             announce(message) {
@@ -595,37 +558,8 @@
             }
         }
 
-        function initUpdateBanner() {
-            const banner = document.getElementById('update-banner');
-            const announcer = document.getElementById('sr-announcer');
-            if (!banner) return;
-
-            const sha = banner.getAttribute('data-sha');
-            if (localStorage.getItem('dismissed-update-' + sha) !== 'true') {
-                banner.removeAttribute('hidden');
-            }
-
-            const closeBtn = document.getElementById('close-update-btn');
-            if (closeBtn) {
-                const dismiss = () => {
-                    localStorage.setItem('dismissed-update-' + sha, 'true');
-                    banner.setAttribute('hidden', '');
-                    if (announcer) announcer.textContent = 'Update banner dismissed';
-                };
-                closeBtn.addEventListener('click', dismiss);
-                closeBtn.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        dismiss();
-                    }
-                });
-            }
-        }
-
-        // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             new AccessibleMenuButton('more-menu-btn', 'settings-menu', 'close-menu-btn');
-            initUpdateBanner();
         });
     </script>
 </body>
