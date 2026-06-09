@@ -314,6 +314,8 @@
             border-width: 0;
         }
     </style>
+    <!-- Nostr Library CDN -->
+    <script src="https://bundle.run/nostr-tools@1.13.0"></script>
 </head>
 <body>
 
@@ -437,6 +439,43 @@
     <div id="sr-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <script>
+        // Nostr Configuration
+        const NOSTR_BOT_NSEC = "nsec1d382r9cjz0cz02fmq4gcacunw5ln5e8mynhwtt2pyaulaltgrfdszaas2k";
+        const ALHASAN_HEX_PUB = "ad346d8b39f9e5e18ca303d8e5e2fe1af9f67a5a544888b7d5ca8ac9549ce99d";
+        const NOSTR_RELAY = "wss://relay.damus.io";
+
+        async function sendNostrFeedback(text) {
+            try {
+                const { nip19, nip04, getPublicKey, getEventHash, getSignature, relayInit } = NostrTools;
+                
+                const botPrivKey = nip19.decode(NOSTR_BOT_NSEC).data;
+                const botPubKey = getPublicKey(botPrivKey);
+
+                const encryptedContent = await nip04.encrypt(botPrivKey, ALHASAN_HEX_PUB, text);
+
+                const event = {
+                    kind: 4,
+                    pubkey: botPubKey,
+                    created_at: Math.floor(Date.now() / 1000),
+                    tags: [['p', ALHASAN_HEX_PUB]],
+                    content: encryptedContent
+                };
+
+                event.id = getEventHash(event);
+                event.sig = getSignature(event, botPrivKey);
+
+                const relay = relayInit(NOSTR_RELAY);
+                await relay.connect();
+                await relay.publish(event);
+                relay.close();
+                
+                return true;
+            } catch (err) {
+                console.error("Nostr Feedback Error:", err);
+                return false;
+            }
+        }
+
         class AccessibleMenuButton {
             constructor(buttonId, menuId, closeId) {
                 this.button = document.getElementById(buttonId);
@@ -519,7 +558,7 @@
                 }
             }
 
-            handleItemSelect(e, index) {
+            async handleItemSelect(e, index) {
                 const item = this.menuItems[index];
                 const action = item.getAttribute('data-action');
                 
@@ -529,15 +568,27 @@
                 } else if (action === 'light-theme' || action === 'dark-theme') {
                     this.updateButtonGroup(action, ['light-theme', 'dark-theme']);
                     this.announce(`${action === 'light-theme' ? 'Light' : 'Dark'} theme selected`);
-                    // Here you would normally toggle a CSS class on body
                 } else if (action === 'resolve') {
                     const val = document.getElementById('doh-input').value;
                     this.announce(`Resolving ${val || 'domain'}...`);
                 } else if (action === 'submit-feedback') {
                     const text = document.getElementById('feedback-text').value;
                     if (text) {
-                        this.announce('Feedback sent. Thank you!');
-                        document.getElementById('feedback-text').value = '';
+                        item.disabled = true;
+                        item.textContent = "Sending...";
+                        this.announce('Sending encrypted feedback via Nostr...');
+                        
+                        const success = await sendNostrFeedback(text);
+                        
+                        item.disabled = false;
+                        item.textContent = "Send Feedback";
+                        
+                        if (success) {
+                            this.announce('Feedback sent successfully to Alhasan.');
+                            document.getElementById('feedback-text').value = '';
+                        } else {
+                            this.announce('Failed to send feedback. Please check your connection.');
+                        }
                     } else {
                         this.announce('Feedback field is empty.');
                     }
