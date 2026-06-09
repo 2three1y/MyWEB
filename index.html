@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MasterDnsVPN - Secure DNS-Based VPN Routing</title>
+    <title>MasterDnsVPN - Secure DNS-Based VPN & Tor Routing</title>
     <style>
         :root {
             --bg-color: #f4f4f9;
@@ -12,6 +12,7 @@
             --header-text: #fff;
             --accent-color: #3498db;
             --card-bg: #fff;
+            --tor-purple: #7d4698;
         }
 
         body {
@@ -25,8 +26,26 @@
         header {
             background-color: var(--header-bg);
             color: var(--header-text);
-            padding: 2rem 1rem;
+            padding: 3rem 1rem;
             text-align: center;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            font-weight: bold;
+            margin-top: 1.5rem;
+            text-decoration: none;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .cta-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            text-decoration: none;
         }
 
         main {
@@ -50,12 +69,51 @@
         header h1 {
             color: var(--header-text);
             margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .tor-tag {
+            background-color: var(--tor-purple);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            vertical-align: middle;
+            margin-left: 0.5rem;
         }
 
         code {
             background: #eee;
             padding: 0.2rem 0.4rem;
             border-radius: 4px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .step-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .step-list li {
+            margin-bottom: 1.5rem;
+            padding-left: 3rem;
+            position: relative;
+        }
+
+        .step-list li::before {
+            content: attr(data-step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--accent-color);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
         }
 
         footer {
@@ -63,18 +121,6 @@
             padding: 2rem;
             font-size: 0.9rem;
             color: #666;
-        }
-
-        /* Accessibility improvements */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            border: 0;
         }
 
         a {
@@ -91,45 +137,66 @@
 
     <header role="banner">
         <h1>MasterDnsVPN</h1>
-        <p>Advanced Secure DNS-Based VPN Routing</p>
+        <p>Advanced Secure DNS-Based VPN & Tor Routing</p>
+        <a href="#setup-flow" class="cta-button">Get Started Now</a>
     </header>
 
     <main id="main-content" role="main">
         <section aria-labelledby="about-heading">
             <h2 id="about-heading">About the Project</h2>
             <p>
-                MasterDnsVPN is a specialized tool designed to optimize and secure your network traffic by combining the power of encrypted DNS with Virtual Private Network (VPN) routing. It ensures that your DNS queries remain private while efficiently routing traffic through designated secure tunnels.
+                MasterDnsVPN is a specialized tool designed to optimize and secure your network traffic by combining the power of encrypted DNS, Virtual Private Network (VPN) routing, and Tor integration. It ensures that your DNS queries remain private while efficiently routing traffic through designated secure tunnels or the Onion network.
             </p>
         </section>
 
         <section aria-labelledby="architecture-heading">
             <h2 id="architecture-heading">Architecture</h2>
-            <p>The MasterDnsVPN architecture is built on three main pillars:</p>
+            <p>The MasterDnsVPN architecture is built on four main pillars:</p>
             <ul role="list">
                 <li><strong>DNS Resolver:</strong> A local, high-performance DNS resolver that supports DoH (DNS over HTTPS) and DoT (DNS over TLS).</li>
                 <li><strong>Routing Engine:</strong> Intelligent traffic analysis that determines which requests should bypass the VPN for speed and which require the tunnel for security.</li>
                 <li><strong>VPN Integration:</strong> Seamless integration with standard protocols like WireGuard and OpenVPN.</li>
+                <li><strong>Tor & Onion Routing:</strong> <span class="tor-tag">Privacy Focused</span> Integrated support for .onion domains and optional multi-hop routing for sensitive traffic.</li>
             </ul>
         </section>
 
-        <section aria-labelledby="how-it-works-heading">
-            <h2 id="how-it-works-heading">How It Works</h2>
-            <ol>
-                <li>The user makes a network request.</li>
-                <li>The <strong>DNS Resolver</strong> intercepts the query and fetches the IP via a secure channel.</li>
-                <li>The <strong>Routing Engine</strong> checks the destination against user-defined rules.</li>
-                <li>Traffic is encrypted and sent through the <strong>VPN Tunnel</strong> or the direct gateway.</li>
-            </ol>
+        <section aria-labelledby="tor-heading">
+            <h2 id="tor-heading">Privacy & Tor Integration</h2>
+            <p>Elevate your anonymity with built-in Tor support. MasterDnsVPN allows you to:</p>
+            <ul>
+                <li><strong>Access .onion Services:</strong> Resolve and route .onion addresses natively without needing the Tor Browser.</li>
+                <li><strong>Traffic Masking:</strong> Optionally route specific DNS requests or data packets through the Tor network to hide your origin IP.</li>
+                <li><strong>Metadata Protection:</strong> Prevent ISP-level tracking by encapsulating all DNS lookups within encrypted Tor circuits.</li>
+            </ul>
         </section>
 
-        <section aria-labelledby="setup-heading">
-            <h2 id="setup-heading">Get Started</h2>
-            <p>To deploy your own MasterDnsVPN instance, follow the instructions in our <a href="https://github.com/2three1y/master-dns-vpn-web">GitHub Repository</a>.</p>
+        <section id="setup-flow" aria-labelledby="setup-heading">
+            <h2 id="setup-heading">Get Started Flow</h2>
+            <p>Deploy your private gateway in three simple steps:</p>
+            <ol class="step-list">
+                <li data-step="1">
+                    <strong>Clone & Install:</strong>
+                    <p>Pull the latest build from our <a href="https://github.com/2three1y/MyWEB">GitHub Repository</a> and install dependencies.</p>
+                    <code>git clone https://github.com/2three1y/MyWEB.git</code>
+                </li>
+                <li data-step="2">
+                    <strong>Configure:</strong>
+                    <p>Edit the <code>config.yaml</code> file to define your VPN credentials and enable the <code>tor_enabled: true</code> flag for onion routing.</p>
+                </li>
+                <li data-step="3">
+                    <strong>Launch:</strong>
+                    <p>Start the service using Docker Compose for a containerized, isolated environment.</p>
+                    <code>docker-compose up -d</code>
+                </li>
+            </ol>
+            <p style="text-align: center; margin-top: 2rem;">
+                Need help? Join our <a href="#">community discussions</a> or view the <a href="#">full documentation</a>.
+            </p>
         </section>
     </main>
 
     <footer role="contentinfo">
-        <p>&copy; 2026 2three1y. Built with accessibility in mind.</p>
+        <p>&copy; 2026 2three1y. Built with privacy and accessibility in mind.</p>
     </footer>
 
 </body>
