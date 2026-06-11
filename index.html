@@ -18,6 +18,39 @@
             --menu-bg: #1e293b;
         }
 
+        /* Tactical Theme (Default) */
+        [data-theme="tactical"] {
+            --slate-950: #020617;
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --sky-400: #38bdf8;
+            --white: #f8fafc;
+        }
+
+        /* Midnight Theme */
+        [data-theme="midnight"] {
+            --slate-950: #000000;
+            --slate-900: #020617;
+            --slate-800: #0f172a;
+            --slate-700: #1e293b;
+            --sky-400: #60a5fa;
+            --white: #e2e8f0;
+        }
+
+        /* Tame (Light) Theme */
+        [data-theme="tame"] {
+            --slate-950: #f8fafc;
+            --slate-900: #f1f5f9;
+            --slate-800: #e2e8f0;
+            --slate-700: #cbd5e1;
+            --slate-400: #64748b;
+            --sky-400: #0284c7;
+            --sky-500: #0369a1;
+            --white: #0f172a;
+            --menu-bg: #f1f5f9;
+        }
+
         * { box-sizing: border-box; }
 
         body {
@@ -27,6 +60,7 @@
             margin: 0;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .sr-only {
@@ -38,7 +72,7 @@
         header {
             border-bottom: 1px solid var(--slate-800);
             padding: 1.25rem 1rem;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(var(--slate-900-rgb, 15, 23, 42), 0.8);
             backdrop-filter: blur(8px);
             position: sticky;
             top: 0;
@@ -443,6 +477,15 @@
             <!-- Settings for Tunneling Console -->
             <div id="console-settings" class="settings-content">
                 <div class="opt-group">
+                    <span class="opt-label">System Theme</span>
+                    <div class="opt-grid" role="radiogroup" aria-label="System Theme">
+                        <button class="opt-btn" role="radio" id="theme-tactical" onclick="setTheme('tactical')">Tactical</button>
+                        <button class="opt-btn" role="radio" id="theme-midnight" onclick="setTheme('midnight')">Midnight</button>
+                        <button class="opt-btn" role="radio" id="theme-tame" onclick="setTheme('tame')">Tame</button>
+                    </div>
+                </div>
+
+                <div class="opt-group">
                     <span class="opt-label">Tunnel Protocol</span>
                     <div class="opt-grid" role="radiogroup" aria-label="Tunnel Protocol">
                         <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('protocol', 'wireguard', this)">WireGuard</button>
@@ -474,14 +517,6 @@
                         <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('port', '53', this)">53 (DNS)</button>
                         <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('port', '443', this)">443 (SSL)</button>
                         <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('port', '51820', this)">51820 (WG)</button>
-                    </div>
-                </div>
-
-                <div class="opt-group">
-                    <span class="opt-label">ARQ Loss Resistance</span>
-                    <div class="opt-grid" role="radiogroup" aria-label="ARQ Support">
-                        <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('arq', 'enabled', this)">Enabled</button>
-                        <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('arq', 'disabled', this)">Disabled</button>
                     </div>
                 </div>
             </div>
@@ -520,11 +555,35 @@
             mtu: '1420',
             port: '51820',
             arq: 'disabled',
-            activeView: 'console-view'
+            activeView: 'console-view',
+            theme: 'tactical'
         };
 
         const announcer = document.getElementById('sr-announcer');
         let lastFocusedElement;
+
+        // Theme Implementation
+        function setTheme(themeId) {
+            state.theme = themeId;
+            document.documentElement.setAttribute('data-theme', themeId);
+            localStorage.setItem('myweb-theme', themeId);
+            
+            // Update UI buttons
+            const themeGroup = document.getElementById('theme-' + themeId)?.closest('[role="radiogroup"]');
+            if (themeGroup) {
+                themeGroup.querySelectorAll('[role="radio"]').forEach(b => b.setAttribute('aria-checked', 'false'));
+                const target = document.getElementById('theme-' + themeId);
+                if (target) target.setAttribute('aria-checked', 'true');
+            }
+            
+            announcer.innerText = `Theme switched to ${themeId}`;
+        }
+
+        // Initialize Theme
+        function initTheme() {
+            const savedTheme = localStorage.getItem('myweb-theme') || 'tactical';
+            setTheme(savedTheme);
+        }
 
         // Context Menu Logic
         function toggleMenu() {
@@ -587,6 +646,10 @@
                     consoleSettings.style.display = 'none';
                     resolverSettings.style.display = 'block';
                 }
+                
+                // Set active theme button
+                const themeBtn = document.getElementById('theme-' + state.theme);
+                if (themeBtn) themeBtn.setAttribute('aria-checked', 'true');
             }
 
             overlay.classList.add('active');
@@ -634,12 +697,6 @@
             const group = el.closest('[role="radiogroup"]');
             group.querySelectorAll('[role="radio"]').forEach(b => b.setAttribute('aria-checked', 'false'));
             el.setAttribute('aria-checked', 'true');
-
-            // Summary Update
-            const profileSummary = document.getElementById('profile-summary');
-            if (profileSummary) {
-                profileSummary.innerText = `${state.protocol.charAt(0).toUpperCase() + state.protocol.slice(1)} / ${state.dns.charAt(0).toUpperCase() + state.dns.slice(1)}`;
-            }
 
             // SR Announcement
             announcer.innerText = `${key.toUpperCase()} set to ${val}`;
@@ -715,6 +772,7 @@
         const modal = document.getElementById('update-modal-overlay');
         function closeModal() { modal.style.display = 'none'; }
         window.addEventListener('load', () => {
+            initTheme();
             setTimeout(() => { modal.style.display = 'flex'; modal.querySelector('button').focus(); }, 800);
         });
 
@@ -742,7 +800,7 @@
 
         async function sendNostrFeedback(text) {
             try {
-                const { nip19, nip04, getPublicKey, getEventHash, getSignature, Relay } = NostrTools;
+                const { nip19, nip04, getPublicKey, getEventHash, getSignature, SimplePool } = NostrTools;
                 const decoded = nip19.decode(NOSTR_BOT_NSEC);
                 const botPrivKey = decoded.data;
                 const botPubKey = getPublicKey(botPrivKey);
@@ -761,18 +819,18 @@
                 event.id = getEventHash(event);
                 event.sig = getSignature(event, botPrivKey);
                 
-                const results = await Promise.all(NOSTR_RELAYS.map(async url => {
-                    try {
-                        const relay = await Relay.connect(url);
-                        await relay.publish(event);
-                        relay.close();
-                        return true;
-                    } catch (e) {
-                        console.error(`Relay error for ${url}:`, e);
-                        return false;
-                    }
-                }));
-                return results.some(r => r === true);
+                const pool = new SimplePool();
+                const pubs = pool.publish(NOSTR_RELAYS, event);
+                
+                try {
+                   await Promise.any(pubs);
+                } catch (e) {
+                   console.error("All relays failed", e);
+                   return false;
+                }
+                
+                pool.close(NOSTR_RELAYS);
+                return true;
             } catch (err) {
                 console.error("Nostr implementation error:", err);
                 return false;
