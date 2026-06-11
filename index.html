@@ -385,7 +385,7 @@
             <nav class="nav-actions" aria-label="Main Navigation">
                 <button class="btn btn-nav" onclick="openOverlay('feedback-overlay')">Submit Feedback</button>
                 <div style="position: relative;">
-                    <button id="more-btn" class="btn btn-nav" aria-haspopup="menu" aria-expanded="false" onclick="toggleMenu()">More</button>
+                    <button id="more-btn" class="btn btn-nav" aria-haspopup="menu" aria-expanded="false" onclick="toggleMenu()">Active View (Tunneling Console)</button>
                     <div id="more-menu" class="popover-menu" role="menu" aria-labelledby="more-btn">
                         <button class="menu-item" role="menuitemradio" aria-checked="true" onclick="switchView('console-view', this)">Tunneling Console</button>
                         <button class="menu-item" role="menuitemradio" aria-checked="false" onclick="switchView('resolver-view', this)">DNS Resolver</button>
@@ -666,6 +666,16 @@
                 }
             }
 
+            // Update button text for overlay views
+            const moreBtn = document.getElementById('more-btn');
+            if (id === 'features-overlay') {
+                moreBtn.innerText = 'Active View (Features)';
+            } else if (id === 'settings-overlay') {
+                moreBtn.innerText = 'Active View (Settings)';
+            } else if (id === 'feedback-overlay') {
+                moreBtn.innerText = 'Active View (Feedback)';
+            }
+
             overlay.classList.add('active');
             overlay.querySelector('.close-btn').focus();
             document.addEventListener('keydown', trapFocus);
@@ -675,6 +685,11 @@
             const overlay = document.getElementById(id);
             overlay.classList.remove('active');
             document.removeEventListener('keydown', trapFocus);
+            
+            // Restore button text to main view
+            const viewName = state.activeView === 'console-view' ? 'Tunneling Console' : 'DNS Resolver';
+            document.getElementById('more-btn').innerText = \`Active View (\${viewName})\`;
+            
             if (lastFocusedElement) lastFocusedElement.focus();
         }
 
@@ -696,8 +711,11 @@
                 if (target) target.setAttribute('aria-checked', 'true');
             }
 
-            // Announce change
+            // Update button text
             const viewName = viewId === 'console-view' ? 'Tunneling Console' : 'DNS Resolver';
+            document.getElementById('more-btn').innerText = \`Active View (\${viewName})\`;
+
+            // Announce change
             announcer.innerText = \`Active view switched to \${viewName}\`;
 
             // Close menu
