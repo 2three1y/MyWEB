@@ -67,6 +67,11 @@
             gap: 0.5rem;
         }
 
+        .nav-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
         /* Typography */
         h1 { font-size: 2.25rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.5rem; }
         h2 { font-size: 1.25rem; font-weight: 700; color: var(--sky-400); margin-top: 0; }
@@ -88,6 +93,14 @@
             border: none;
         }
 
+        .feature-card {
+            display: none;
+        }
+
+        .feature-card.active {
+            display: block;
+        }
+
         /* Interactive Elements */
         .btn {
             display: inline-flex;
@@ -103,13 +116,20 @@
             transition: all 0.2s;
             width: 100%;
             font-size: 1rem;
+            min-height: 48px;
         }
 
         .btn:hover { background: var(--sky-500); transform: translateY(-1px); }
         .btn:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
+        .btn-nav {
+            width: auto;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
         .btn-dismiss {
-            margin-top: 0.75rem;
+            margin-top: 2rem;
             background: var(--slate-800);
             color: var(--white);
             border: 2px solid var(--slate-400);
@@ -148,6 +168,7 @@
             width: 100%;
             margin-bottom: 1rem;
             text-align: left;
+            min-height: 48px;
         }
 
         .switcher-trigger:hover { border-color: var(--sky-400); }
@@ -162,6 +183,7 @@
             width: 100%;
             font-size: 1rem;
             margin-bottom: 1rem;
+            min-height: 48px;
         }
 
         .input-field:focus { outline: none; border-color: var(--sky-400); box-shadow: var(--focus-ring); }
@@ -223,6 +245,7 @@
             text-align: center;
             font-weight: 600;
             transition: all 0.2s;
+            min-height: 48px;
         }
 
         .opt-btn[aria-checked="true"] {
@@ -264,8 +287,10 @@
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
                 MyWEB
             </a>
-            <nav aria-label="Quick links">
-                <button class="btn" style="width:auto; padding: 0.5rem 1rem;" onclick="openSwitcher()">Options</button>
+            <nav class="nav-actions" aria-label="Main Navigation">
+                <button class="btn btn-nav" onclick="openOverlay('feedback-overlay')">Submit Feedback</button>
+                <button class="btn btn-nav" onclick="openOverlay('feature-overlay')">More</button>
+                <button class="btn btn-nav" onclick="openOverlay('settings-overlay')">Settings</button>
             </nav>
         </div>
     </header>
@@ -276,11 +301,12 @@
             <p>Cryptographic Tunneling & Multi-Relay Console.</p>
         </section>
 
-        <section id="config-section">
+        <!-- Tunneling Console View -->
+        <section id="console-view" class="feature-card active">
             <h2>Tunnel Config</h2>
             <p>Generate a tactical configuration for your relay node.</p>
             
-            <button class="switcher-trigger" onclick="openSwitcher()" aria-label="Change protocol and network settings">
+            <button class="switcher-trigger" onclick="openOverlay('settings-overlay')" aria-label="Change protocol and network settings">
                 <span>Network Profile</span>
                 <span class="val" id="profile-summary">WireGuard / Cloudflare</span>
             </button>
@@ -291,7 +317,8 @@
             </button>
         </section>
 
-        <section id="resolver-section">
+        <!-- DNS Resolver View -->
+        <section id="resolver-view" class="feature-card">
             <h2>DoH Resolver</h2>
             <p>Encrypted resolution via Cloudflare Gateway.</p>
             <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
@@ -304,63 +331,105 @@
         </section>
     </main>
 
-    <!-- Switcher Popover -->
-    <div id="switcher-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="switcher-title">
+    <!-- Feedback Overlay -->
+    <div id="feedback-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="feedback-title">
         <div class="container">
             <div class="overlay-header">
-                <h2 id="switcher-title" style="margin:0; color: var(--white)">Console Parameters</h2>
-                <button class="close-btn" onclick="closeSwitcher()" aria-label="Close settings">×</button>
+                <h2 id="feedback-title" style="margin:0; color: var(--white)">Submit Feedback</h2>
+                <button class="close-btn" onclick="closeOverlay('feedback-overlay')" aria-label="Close feedback">×</button>
             </div>
-
-            <div class="opt-group">
-                <span class="opt-label">Tunnel Protocol</span>
-                <div class="opt-grid" role="radiogroup" aria-label="Tunnel Protocol">
-                    <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('protocol', 'wireguard', this)">WireGuard</button>
-                    <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('protocol', 'openvpn', this)">OpenVPN</button>
-                </div>
-            </div>
-
-            <div class="opt-group">
-                <span class="opt-label">DNS Provider</span>
-                <div class="opt-grid" role="radiogroup" aria-label="DNS Provider">
-                    <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('dns', 'cloudflare', this)">Cloudflare</button>
-                    <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('dns', 'google', this)">Google</button>
-                    <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('dns', 'quad9', this)">Quad9</button>
-                </div>
-            </div>
-
-            <div class="opt-group">
-                <span class="opt-label">MTU Optimization</span>
-                <div class="opt-grid" role="radiogroup" aria-label="MTU Settings">
-                    <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('mtu', '1280', this)">1280 (Stable)</button>
-                    <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('mtu', '1420', this)">1420 (Fast)</button>
-                    <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('mtu', '1500', this)">1500 (Std)</button>
-                </div>
-            </div>
-
-            <div class="opt-group">
-                <span class="opt-label">Target Port</span>
-                <div class="opt-grid" role="radiogroup" aria-label="Network Port">
-                    <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('port', '53', this)">53 (DNS)</button>
-                    <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('port', '443', this)">443 (SSL)</button>
-                    <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('port', '51820', this)">51820 (WG)</button>
-                </div>
-            </div>
-
-            <div class="opt-group">
-                <span class="opt-label">ARQ Loss Resistance</span>
-                <div class="opt-grid" role="radiogroup" aria-label="ARQ Support">
-                    <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('arq', 'enabled', this)">Enabled</button>
-                    <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('arq', 'disabled', this)">Disabled</button>
-                </div>
-            </div>
-
-            <button class="btn" onclick="closeSwitcher()">Apply Changes</button>
-            <button class="btn-dismiss" onclick="closeSwitcher()" aria-label="Dismiss and close settings">Dismiss Settings</button>
+            <p>Your feedback is encrypted and sent via Nostr protocol.</p>
+            <textarea id="feedback-text" class="input-field" style="min-height: 150px; resize: none;" placeholder="Type your feedback here..." aria-label="Feedback message"></textarea>
+            <button class="btn" onclick="submitFeedback()">Send Feedback</button>
+            <button class="btn-dismiss" onclick="closeOverlay('feedback-overlay')" aria-label="Dismiss feedback">Dismiss Feedback</button>
         </div>
     </div>
 
-    <!-- Update Modal (Re-styled) -->
+    <!-- Feature Switcher Overlay -->
+    <div id="feature-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="feature-title">
+        <div class="container">
+            <div class="overlay-header">
+                <h2 id="feature-title" style="margin:0; color: var(--white)">Active Features</h2>
+                <button class="close-btn" onclick="closeOverlay('feature-overlay')" aria-label="Close menu">×</button>
+            </div>
+            <div class="opt-group">
+                <span class="opt-label">Select Active View</span>
+                <div class="opt-grid" role="radiogroup" aria-label="Feature Switcher">
+                    <button id="btn-switch-console" class="opt-btn" role="radio" aria-checked="true" onclick="switchView('console-view', this)">Tunneling Console</button>
+                    <button id="btn-switch-resolver" class="opt-btn" role="radio" aria-checked="false" onclick="switchView('resolver-view', this)">DNS Resolver</button>
+                </div>
+            </div>
+            <button class="btn-dismiss" onclick="closeOverlay('feature-overlay')" aria-label="Dismiss and close menu">Dismiss Menu</button>
+        </div>
+    </div>
+
+    <!-- Contextual Settings Overlay -->
+    <div id="settings-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div class="container">
+            <div class="overlay-header">
+                <h2 id="settings-title" style="margin:0; color: var(--white)">Feature Settings</h2>
+                <button class="close-btn" onclick="closeOverlay('settings-overlay')" aria-label="Close settings">×</button>
+            </div>
+
+            <!-- Settings for Tunneling Console -->
+            <div id="console-settings" class="settings-content">
+                <div class="opt-group">
+                    <span class="opt-label">Tunnel Protocol</span>
+                    <div class="opt-grid" role="radiogroup" aria-label="Tunnel Protocol">
+                        <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('protocol', 'wireguard', this)">WireGuard</button>
+                        <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('protocol', 'openvpn', this)">OpenVPN</button>
+                    </div>
+                </div>
+
+                <div class="opt-group">
+                    <span class="opt-label">DNS Provider</span>
+                    <div class="opt-grid" role="radiogroup" aria-label="DNS Provider">
+                        <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('dns', 'cloudflare', this)">Cloudflare</button>
+                        <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('dns', 'google', this)">Google</button>
+                        <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('dns', 'quad9', this)">Quad9</button>
+                    </div>
+                </div>
+
+                <div class="opt-group">
+                    <span class="opt-label">MTU Optimization</span>
+                    <div class="opt-grid" role="radiogroup" aria-label="MTU Settings">
+                        <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('mtu', '1280', this)">1280 (Stable)</button>
+                        <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('mtu', '1420', this)">1420 (Fast)</button>
+                        <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('mtu', '1500', this)">1500 (Std)</button>
+                    </div>
+                </div>
+
+                <div class="opt-group">
+                    <span class="opt-label">Target Port</span>
+                    <div class="opt-grid" role="radiogroup" aria-label="Network Port">
+                        <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('port', '53', this)">53 (DNS)</button>
+                        <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('port', '443', this)">443 (SSL)</button>
+                        <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('port', '51820', this)">51820 (WG)</button>
+                    </div>
+                </div>
+
+                <div class="opt-group">
+                    <span class="opt-label">ARQ Loss Resistance</span>
+                    <div class="opt-grid" role="radiogroup" aria-label="ARQ Support">
+                        <button class="opt-btn" role="radio" aria-checked="false" onclick="updateState('arq', 'enabled', this)">Enabled</button>
+                        <button class="opt-btn" role="radio" aria-checked="true" onclick="updateState('arq', 'disabled', this)">Disabled</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings for DNS Resolver -->
+            <div id="resolver-settings" class="settings-content" style="display: none;">
+                <p style="text-align: center; padding: 2rem; background: var(--slate-900); border-radius: 8px;">
+                    DNS Resolver is in Standalone Mode. No extra parameters needed.
+                </p>
+            </div>
+
+            <button class="btn" onclick="closeOverlay('settings-overlay')">Apply Changes</button>
+            <button class="btn-dismiss" onclick="closeOverlay('settings-overlay')" aria-label="Dismiss and close settings">Dismiss Settings</button>
+        </div>
+    </div>
+
+    <!-- Update Modal (On Load) -->
     <div id="update-modal-overlay" class="overlay" style="background: rgba(2, 6, 23, 0.9); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
         <div class="container" style="max-width: 400px; background: var(--slate-800); border: 1px solid var(--slate-700); padding: 2rem; border-radius: 16px; position: relative;">
             <button class="close-btn" style="position: absolute; top: -20px; right: -20px;" onclick="closeModal()">×</button>
@@ -381,12 +450,61 @@
             dns: 'cloudflare',
             mtu: '1420',
             port: '51820',
-            arq: 'disabled'
+            arq: 'disabled',
+            activeView: 'console-view'
         };
 
         const announcer = document.getElementById('sr-announcer');
-        const switcherOverlay = document.getElementById('switcher-overlay');
         let lastFocusedElement;
+
+        function openOverlay(id) {
+            lastFocusedElement = document.activeElement;
+            const overlay = document.getElementById(id);
+            
+            // Contextual settings update
+            if (id === 'settings-overlay') {
+                const consoleSettings = document.getElementById('console-settings');
+                const resolverSettings = document.getElementById('resolver-settings');
+                if (state.activeView === 'console-view') {
+                    consoleSettings.style.display = 'block';
+                    resolverSettings.style.display = 'none';
+                } else {
+                    consoleSettings.style.display = 'none';
+                    resolverSettings.style.display = 'block';
+                }
+            }
+
+            overlay.classList.add('active');
+            overlay.querySelector('.close-btn').focus();
+            document.addEventListener('keydown', trapFocus);
+        }
+
+        function closeOverlay(id) {
+            const overlay = document.getElementById(id);
+            overlay.classList.remove('active');
+            document.removeEventListener('keydown', trapFocus);
+            if (lastFocusedElement) lastFocusedElement.focus();
+        }
+
+        function switchView(viewId, el) {
+            state.activeView = viewId;
+            
+            // Update UI components
+            document.querySelectorAll('.feature-card').forEach(card => card.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+
+            // Update radio buttons in feature overlay
+            const group = el.closest('[role="radiogroup"]');
+            group.querySelectorAll('[role="radio"]').forEach(b => b.setAttribute('aria-checked', 'false'));
+            el.setAttribute('aria-checked', 'true');
+
+            // Announce change
+            const viewName = viewId === 'console-view' ? 'Tunneling Console' : 'DNS Resolver';
+            announcer.innerText = `Active view switched to ${viewName}`;
+
+            // Close overlay after selection
+            setTimeout(() => closeOverlay('feature-overlay'), 300);
+        }
 
         function updateState(key, val, el) {
             state[key] = val;
@@ -403,29 +521,19 @@
             announcer.innerText = `${key.toUpperCase()} set to ${val}`;
         }
 
-        function openSwitcher() {
-            lastFocusedElement = document.activeElement;
-            switcherOverlay.classList.add('active');
-            switcherOverlay.querySelector('.close-btn').focus();
-            document.addEventListener('keydown', trapFocus);
-        }
-
-        function closeSwitcher() {
-            switcherOverlay.classList.remove('active');
-            document.removeEventListener('keydown', trapFocus);
-            if (lastFocusedElement) lastFocusedElement.focus();
-        }
-
         function trapFocus(e) {
             if (e.key === 'Escape') {
-                closeSwitcher();
+                const activeOverlay = document.querySelector('.overlay.active');
+                if (activeOverlay) closeOverlay(activeOverlay.id);
                 closeModal();
             }
             if (e.key !== 'Tab') return;
             const currentOverlay = document.querySelector('.overlay.active') || (document.getElementById('update-modal-overlay').style.display === 'flex' ? document.getElementById('update-modal-overlay') : null);
             if (!currentOverlay) return;
 
-            const focusable = currentOverlay.querySelectorAll('button, [href], input, [tabindex]:not([tabindex="-1"])');
+            const focusable = currentOverlay.querySelectorAll('button, [href], input, textarea, [tabindex]:not([tabindex="-1"])');
+            if (focusable.length === 0) return;
+            
             const first = focusable[0];
             const last = focusable[focusable.length - 1];
 
@@ -436,7 +544,7 @@
             }
         }
 
-        // Modified Config Gen
+        // Config Generation
         function generateConfig() {
             const yaml = `myweb_config:
   version: 2.0
@@ -486,10 +594,27 @@
             setTimeout(() => { modal.style.display = 'flex'; modal.querySelector('button').focus(); }, 800);
         });
 
-        // Nostr (Kept Intact)
+        // Nostr Feedback
         const NOSTR_BOT_NSEC = "nsec1d382r9cjz0cz02fmq4gcacunw5ln5e8mynhwtt2pyaulaltgrfdszaas2k";
         const ALHASAN_HEX_PUB = "ad346d8b39f9e5e18ca303d8e5e2fe1af9f67a5a544888b7d5ca8ac9549ce99d";
         const NOSTR_RELAYS = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.snort.social"];
+
+        async function submitFeedback() {
+            const text = document.getElementById('feedback-text').value;
+            if (!text) return alert("Please enter feedback.");
+            
+            announcer.innerText = "Sending feedback via Nostr...";
+            const success = await sendNostrFeedback(text);
+            
+            if (success) {
+                announcer.innerText = "Feedback sent successfully.";
+                document.getElementById('feedback-text').value = '';
+                closeOverlay('feedback-overlay');
+            } else {
+                announcer.innerText = "Failed to send feedback.";
+                alert("Nostr relay error. Please try again later.");
+            }
+        }
 
         async function sendNostrFeedback(text) {
             try {
@@ -500,12 +625,16 @@
                 const event = { kind: 4, pubkey: botPubKey, created_at: Math.floor(Date.now()/1000), tags: [['p', ALHASAN_HEX_PUB]], content: encryptedContent };
                 event.id = getEventHash(event);
                 event.sig = getSignature(event, botPrivKey);
-                NOSTR_RELAYS.forEach(async url => {
-                    const relay = relayInit(url);
-                    await relay.connect();
-                    relay.publish(event);
-                });
-                return true;
+                
+                const results = await Promise.all(NOSTR_RELAYS.map(async url => {
+                    try {
+                        const relay = relayInit(url);
+                        await relay.connect();
+                        await relay.publish(event);
+                        return true;
+                    } catch (e) { return false; }
+                }));
+                return results.some(r => r === true);
             } catch (err) { return false; }
         }
     </script>
