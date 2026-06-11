@@ -15,6 +15,7 @@
             --sky-500: #0ea5e9;
             --white: #f8fafc;
             --focus-ring: 0 0 0 3px rgba(56, 189, 248, 0.5);
+            --menu-bg: #1e293b;
         }
 
         * { box-sizing: border-box; }
@@ -70,6 +71,7 @@
         .nav-actions {
             display: flex;
             gap: 0.5rem;
+            position: relative;
         }
 
         /* Typography */
@@ -188,6 +190,65 @@
 
         .input-field:focus { outline: none; border-color: var(--sky-400); box-shadow: var(--focus-ring); }
 
+        /* Swift-style Popup Menu */
+        .popover-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--menu-bg);
+            border: 1px solid var(--slate-700);
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            min-width: 220px;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            padding: 0.5rem;
+            transform-origin: top right;
+            animation: menuScale 0.15s ease-out;
+        }
+
+        @keyframes menuScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .popover-menu.active { display: flex; }
+
+        .menu-item {
+            background: transparent;
+            border: none;
+            color: var(--white);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.15s;
+            width: 100%;
+        }
+
+        .menu-item:hover, .menu-item:focus {
+            background: var(--sky-400);
+            color: var(--slate-950);
+            outline: none;
+        }
+
+        .menu-item[aria-checked="true"]::after {
+            content: '✓';
+            font-weight: 800;
+        }
+
+        .menu-divider {
+            height: 1px;
+            background: var(--slate-700);
+            margin: 0.4rem 0.5rem;
+        }
+
         /* Overlay Styles */
         .overlay {
             position: fixed;
@@ -289,8 +350,15 @@
             </a>
             <nav class="nav-actions" aria-label="Main Navigation">
                 <button class="btn btn-nav" onclick="openOverlay('feedback-overlay')">Submit Feedback</button>
-                <button class="btn btn-nav" onclick="openOverlay('feature-overlay')">More</button>
-                <button class="btn btn-nav" onclick="openOverlay('settings-overlay')">Settings</button>
+                <div style="position: relative;">
+                    <button id="more-btn" class="btn btn-nav" aria-haspopup="menu" aria-expanded="false" onclick="toggleMenu()">More</button>
+                    <div id="more-menu" class="popover-menu" role="menu" aria-labelledby="more-btn">
+                        <button class="menu-item" role="menuitemradio" aria-checked="true" onclick="switchView('console-view', this)">Tunneling Console</button>
+                        <button class="menu-item" role="menuitemradio" aria-checked="false" onclick="switchView('resolver-view', this)">DNS Resolver</button>
+                        <div class="menu-divider"></div>
+                        <button class="menu-item" role="menuitem" onclick="openOverlay('settings-overlay')">Settings</button>
+                    </div>
+                </div>
             </nav>
         </div>
     </header>
@@ -342,24 +410,6 @@
             <textarea id="feedback-text" class="input-field" style="min-height: 150px; resize: none;" placeholder="Type your feedback here..." aria-label="Feedback message"></textarea>
             <button class="btn" onclick="submitFeedback()">Send Feedback</button>
             <button class="btn-dismiss" onclick="closeOverlay('feedback-overlay')" aria-label="Dismiss feedback">Dismiss Feedback</button>
-        </div>
-    </div>
-
-    <!-- Feature Switcher Overlay -->
-    <div id="feature-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="feature-title">
-        <div class="container">
-            <div class="overlay-header">
-                <h2 id="feature-title" style="margin:0; color: var(--white)">Active Features</h2>
-                <button class="close-btn" onclick="closeOverlay('feature-overlay')" aria-label="Close menu">×</button>
-            </div>
-            <div class="opt-group">
-                <span class="opt-label">Select Active View</span>
-                <div class="opt-grid" role="radiogroup" aria-label="Feature Switcher">
-                    <button id="btn-switch-console" class="opt-btn" role="radio" aria-checked="true" onclick="switchView('console-view', this)">Tunneling Console</button>
-                    <button id="btn-switch-resolver" class="opt-btn" role="radio" aria-checked="false" onclick="switchView('resolver-view', this)">DNS Resolver</button>
-                </div>
-            </div>
-            <button class="btn-dismiss" onclick="closeOverlay('feature-overlay')" aria-label="Dismiss and close menu">Dismiss Menu</button>
         </div>
     </div>
 
@@ -457,7 +507,53 @@
         const announcer = document.getElementById('sr-announcer');
         let lastFocusedElement;
 
+        // Context Menu Logic
+        function toggleMenu() {
+            const menu = document.getElementById('more-menu');
+            const btn = document.getElementById('more-btn');
+            const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+            
+            if (isExpanded) {
+                closeMenu();
+            } else {
+                menu.classList.add('active');
+                btn.setAttribute('aria-expanded', 'true');
+                document.addEventListener('click', handleOutsideClick);
+                document.addEventListener('keydown', handleMenuNav);
+                menu.querySelector('.menu-item').focus();
+            }
+        }
+
+        function closeMenu() {
+            const menu = document.getElementById('more-menu');
+            const btn = document.getElementById('more-btn');
+            menu.classList.remove('active');
+            btn.setAttribute('aria-expanded', 'false');
+            document.removeEventListener('click', handleOutsideClick);
+            document.removeEventListener('keydown', handleMenuNav);
+        }
+
+        function handleOutsideClick(e) {
+            if (!document.getElementById('more-menu').contains(e.target) && e.target.id !== 'more-btn') {
+                closeMenu();
+            }
+        }
+
+        function handleMenuNav(e) {
+            if (e.key === 'Escape') closeMenu();
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                const menu = document.getElementById('more-menu');
+                const items = Array.from(menu.querySelectorAll('.menu-item'));
+                let index = items.indexOf(document.activeElement);
+                if (e.key === 'ArrowDown') index = (index + 1) % items.length;
+                else index = (index - 1 + items.length) % items.length;
+                items[index].focus();
+            }
+        }
+
         function openOverlay(id) {
+            closeMenu();
             lastFocusedElement = document.activeElement;
             const overlay = document.getElementById(id);
             
@@ -493,17 +589,23 @@
             document.querySelectorAll('.feature-card').forEach(card => card.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
 
-            // Update radio buttons in feature overlay
-            const group = el.closest('[role="radiogroup"]');
-            group.querySelectorAll('[role="radio"]').forEach(b => b.setAttribute('aria-checked', 'false'));
-            el.setAttribute('aria-checked', 'true');
+            // Update menu items
+            const menu = document.getElementById('more-menu');
+            menu.querySelectorAll('[role="menuitemradio"]').forEach(b => b.setAttribute('aria-checked', 'false'));
+            if (el.getAttribute('role') === 'menuitemradio') {
+                el.setAttribute('aria-checked', 'true');
+            } else {
+                // Find matching menu item if called from elsewhere
+                const target = Array.from(menu.querySelectorAll('[role="menuitemradio"]')).find(i => i.getAttribute('onclick').includes(viewId));
+                if (target) target.setAttribute('aria-checked', 'true');
+            }
 
             // Announce change
             const viewName = viewId === 'console-view' ? 'Tunneling Console' : 'DNS Resolver';
             announcer.innerText = `Active view switched to ${viewName}`;
 
-            // Close overlay after selection
-            setTimeout(() => closeOverlay('feature-overlay'), 300);
+            // Close menu
+            setTimeout(closeMenu, 150);
         }
 
         function updateState(key, val, el) {
@@ -618,24 +720,41 @@
 
         async function sendNostrFeedback(text) {
             try {
-                const { nip19, nip04, getPublicKey, getEventHash, getSignature, relayInit } = NostrTools;
-                const botPrivKey = nip19.decode(NOSTR_BOT_NSEC).data;
+                const { nip19, nip04, getPublicKey, getEventHash, getSignature, Relay } = NostrTools;
+                const decoded = nip19.decode(NOSTR_BOT_NSEC);
+                const botPrivKey = decoded.data;
                 const botPubKey = getPublicKey(botPrivKey);
+                
+                // Content encryption (NIP-04)
                 const encryptedContent = await nip04.encrypt(botPrivKey, ALHASAN_HEX_PUB, text);
-                const event = { kind: 4, pubkey: botPubKey, created_at: Math.floor(Date.now()/1000), tags: [['p', ALHASAN_HEX_PUB]], content: encryptedContent };
+                
+                const event = {
+                    kind: 4,
+                    pubkey: botPubKey,
+                    created_at: Math.floor(Date.now() / 1000),
+                    tags: [['p', ALHASAN_HEX_PUB]],
+                    content: encryptedContent
+                };
+                
                 event.id = getEventHash(event);
                 event.sig = getSignature(event, botPrivKey);
                 
                 const results = await Promise.all(NOSTR_RELAYS.map(async url => {
                     try {
-                        const relay = relayInit(url);
-                        await relay.connect();
+                        const relay = await Relay.connect(url);
                         await relay.publish(event);
+                        relay.close();
                         return true;
-                    } catch (e) { return false; }
+                    } catch (e) {
+                        console.error(`Relay error for ${url}:`, e);
+                        return false;
+                    }
                 }));
                 return results.some(r => r === true);
-            } catch (err) { return false; }
+            } catch (err) {
+                console.error("Nostr implementation error:", err);
+                return false;
+            }
         }
     </script>
 </body>
