@@ -277,6 +277,12 @@
             font-weight: 800;
         }
 
+        .menu-item:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         .menu-divider {
             height: 1px;
             background: var(--slate-700);
@@ -391,7 +397,7 @@
                         <button class="menu-item" role="menuitemradio" aria-checked="false" onclick="switchView('resolver-view', this)">DNS Resolver</button>
                         <div class="menu-divider"></div>
                         <button class="menu-item" role="menuitem" onclick="openOverlay('features-overlay')">Features</button>
-                        <button class="menu-item" role="menuitem" onclick="openOverlay('settings-overlay')">Settings</button>
+                        <button id="settings-menu-item" class="menu-item" role="menuitem" onclick="openOverlay('settings-overlay')">Settings</button>
                     </div>
                 </div>
             </nav>
@@ -629,7 +635,7 @@
             if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                 e.preventDefault();
                 const menu = document.getElementById('more-menu');
-                const items = Array.from(menu.querySelectorAll('.menu-item'));
+                const items = Array.from(menu.querySelectorAll('.menu-item')).filter(i => !i.disabled);
                 let index = items.indexOf(document.activeElement);
                 if (e.key === 'ArrowDown') index = (index + 1) % items.length;
                 else index = (index - 1 + items.length) % items.length;
@@ -714,6 +720,18 @@
             // Update button text
             const viewName = viewId === 'console-view' ? 'Tunneling Console' : 'DNS Resolver';
             document.getElementById('more-btn').innerText = \`Active View (\${viewName})\`;
+
+            // Logic to disable/enable Settings button
+            const settingsItem = document.getElementById('settings-menu-item');
+            if (viewId === 'resolver-view') {
+                settingsItem.innerText = 'Settings (Disabled)';
+                settingsItem.disabled = true;
+                settingsItem.setAttribute('aria-disabled', 'true');
+            } else {
+                settingsItem.innerText = 'Settings';
+                settingsItem.disabled = false;
+                settingsItem.setAttribute('aria-disabled', 'false');
+            }
 
             // Announce change
             announcer.innerText = \`Active view switched to \${viewName}\`;
