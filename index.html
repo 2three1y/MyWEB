@@ -356,6 +356,7 @@
                         <button class="menu-item" role="menuitemradio" aria-checked="true" onclick="switchView('console-view', this)">Tunneling Console</button>
                         <button class="menu-item" role="menuitemradio" aria-checked="false" onclick="switchView('resolver-view', this)">DNS Resolver</button>
                         <div class="menu-divider"></div>
+                        <button class="menu-item" role="menuitem" onclick="openOverlay('features-overlay')">Features</button>
                         <button class="menu-item" role="menuitem" onclick="openOverlay('settings-overlay')">Settings</button>
                     </div>
                 </div>
@@ -374,11 +375,6 @@
             <h2>Tunnel Config</h2>
             <p>Generate a tactical configuration for your relay node.</p>
             
-            <button class="switcher-trigger" onclick="openOverlay('settings-overlay')" aria-label="Change protocol and network settings">
-                <span>Network Profile</span>
-                <span class="val" id="profile-summary">WireGuard / Cloudflare</span>
-            </button>
-
             <button class="btn" onclick="generateConfig()">
                 <svg style="margin-right: 8px" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                 Download config.yaml
@@ -410,6 +406,29 @@
             <textarea id="feedback-text" class="input-field" style="min-height: 150px; resize: none;" placeholder="Type your feedback here..." aria-label="Feedback message"></textarea>
             <button class="btn" onclick="submitFeedback()">Send Feedback</button>
             <button class="btn-dismiss" onclick="closeOverlay('feedback-overlay')" aria-label="Dismiss feedback">Dismiss Feedback</button>
+        </div>
+    </div>
+
+    <!-- Features Overlay -->
+    <div id="features-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="features-title">
+        <div class="container">
+            <div class="overlay-header">
+                <h2 id="features-title" style="margin:0; color: var(--white)">Website Features</h2>
+                <button class="close-btn" onclick="closeOverlay('features-overlay')" aria-label="Close features">×</button>
+            </div>
+            <section style="background: var(--slate-900); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;">
+                <h3>Tactical Tunneling</h3>
+                <p>Advanced WireGuard and OpenVPN configurations with MTU optimization and custom port selection.</p>
+            </section>
+            <section style="background: var(--slate-900); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;">
+                <h3>Encrypted DNS</h3>
+                <p>Private DNS resolution using DNS-over-HTTPS (DoH) via Cloudflare Gateway.</p>
+            </section>
+            <section style="background: var(--slate-900); padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;">
+                <h3>Secure Feedback</h3>
+                <p>End-to-end encrypted feedback transmission via the Nostr decentralized protocol.</p>
+            </section>
+            <button class="btn-dismiss" onclick="closeOverlay('features-overlay')" aria-label="Dismiss features">Close Panel</button>
         </div>
     </div>
 
@@ -617,7 +636,10 @@
             el.setAttribute('aria-checked', 'true');
 
             // Summary Update
-            document.getElementById('profile-summary').innerText = `${state.protocol.charAt(0).toUpperCase() + state.protocol.slice(1)} / ${state.dns.charAt(0).toUpperCase() + state.dns.slice(1)}`;
+            const profileSummary = document.getElementById('profile-summary');
+            if (profileSummary) {
+                profileSummary.innerText = `${state.protocol.charAt(0).toUpperCase() + state.protocol.slice(1)} / ${state.dns.charAt(0).toUpperCase() + state.dns.slice(1)}`;
+            }
 
             // SR Announcement
             announcer.innerText = `${key.toUpperCase()} set to ${val}`;
