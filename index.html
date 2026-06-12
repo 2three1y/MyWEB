@@ -1,4 +1,4 @@
-successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f)successfully downloaded text file (SHA: b65bf7ba17f4c132c5f0c65e0878a97dd7051bf5)successfully downloaded text file (SHA: baeea08a9873bdf40d29ccfd8580239da3c6540a)<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -379,10 +379,6 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
     <script src="https://unpkg.com/nostr-tools@1.13.0/lib/nostr.bundle.js"></script>
 </head>
 <body>
-    <!-- UPDATE_BANNER_PLACEHOLDER -->
-    <!-- UPDATE_BANNER_PLACEHOLDER -->
-    <!-- UPDATE_BANNER_PLACEHOLDER -->
-
     <div id="sr-announcer" class="sr-only" aria-live="polite"></div>
 
     <header role="banner">
@@ -576,6 +572,16 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
         };
 
         const announcer = document.getElementById('sr-announcer');
+        
+        // Debounced Announcer
+        let announcerTimeout;
+        function updateAnnouncer(message) {
+            clearTimeout(announcerTimeout);
+            announcerTimeout = setTimeout(() => {
+                announcer.innerText = message;
+            }, 100);
+        }
+
         let lastFocusedElement;
 
         // Theme Implementation
@@ -592,7 +598,7 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
                 if (target) target.setAttribute('aria-checked', 'true');
             }
             
-            announcer.innerText = \`Theme switched to \${themeId}\`;
+            updateAnnouncer(`Theme switched to ${themeId}`);
         }
 
         // Initialize Theme
@@ -671,7 +677,7 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
                 const arqLabel = document.getElementById('arq-label-text');
                 if (arqBtn && arqLabel) {
                     arqBtn.setAttribute('aria-checked', state.arq);
-                    arqLabel.innerText = \`ARQ LOSS RESISTANCE (\${state.arq ? 'ON' : 'OFF'})\`;
+                    arqLabel.innerText = `ARQ LOSS RESISTANCE (${state.arq ? 'ON' : 'OFF'})`;
                 }
             }
 
@@ -697,7 +703,7 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
             
             // Restore button text to main view
             const viewName = state.activeView === 'console-view' ? 'Tunneling Console' : 'DNS Resolver';
-            document.getElementById('more-btn').innerText = \`Active View (\${viewName})\`;
+            document.getElementById('more-btn').innerText = `Active View (${viewName})`;
             
             if (lastFocusedElement) lastFocusedElement.focus();
         }
@@ -722,7 +728,7 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
 
             // Update button text
             const viewName = viewId === 'console-view' ? 'Tunneling Console' : 'DNS Resolver';
-            document.getElementById('more-btn').innerText = \`Active View (\${viewName})\`;
+            document.getElementById('more-btn').innerText = `Active View (${viewName})`;
 
             // Logic to disable/enable Settings button
             const settingsItem = document.getElementById('settings-menu-item');
@@ -737,7 +743,12 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
             }
 
             // Announce change
-            announcer.innerText = \`Active view switched to \${viewName}\`;
+            updateAnnouncer(`Active view switched to ${viewName}`);
+            
+            // Delay focus shift to allow menu to close
+            setTimeout(() => {
+                document.getElementById(viewId).focus();
+            }, 150);
 
             // Close menu
             setTimeout(closeMenu, 150);
@@ -750,9 +761,9 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
             const label = document.getElementById('arq-label-text');
             
             btn.setAttribute('aria-checked', state.arq);
-            label.innerText = \`ARQ LOSS RESISTANCE (\${state.arq ? 'ON' : 'OFF'})\`;
+            label.innerText = `ARQ LOSS RESISTANCE (${state.arq ? 'ON' : 'OFF'})`;
             
-            announcer.innerText = \`ARQ Loss Resistance \${state.arq ? 'enabled' : 'disabled'}\`;
+            updateAnnouncer(`ARQ Loss Resistance ${state.arq ? 'enabled' : 'disabled'}`);
         }
 
         function updateState(key, val, el) {
@@ -764,7 +775,7 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
             el.setAttribute('aria-checked', 'true');
 
             // SR Announcement
-            announcer.innerText = \`\${key.toUpperCase()} set to \${val}\`;
+            updateAnnouncer(`${key.toUpperCase()} set to ${val}`);
         }
 
         function trapFocus(e) {
@@ -792,18 +803,18 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
 
         // Config Generation
         function generateConfig() {
-            const yaml = \`myweb_config:
+            const yaml = `myweb_config:
   version: 2.0
-  protocol: \${state.protocol}
-  dns_provider: \${state.dns}
+  protocol: ${state.protocol}
+  dns_provider: ${state.dns}
   tunnel:
-    mtu: \${state.mtu}
-    port: \${state.port}
-    arq_header: \${state.arq}
+    mtu: ${state.mtu}
+    port: ${state.port}
+    arq_header: ${state.arq}
   security:
     relay_tunneling: enabled
     encryption: aes-256-gcm
-  timestamp: \${new Date().toISOString()}\`;
+  timestamp: ${new Date().toISOString()}`;
 
             const blob = new Blob([yaml], { type: 'text/yaml' });
             const url = URL.createObjectURL(blob);
@@ -812,7 +823,7 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
             a.download = 'config.yaml';
             a.click();
             URL.revokeObjectURL(url);
-            announcer.innerText = "Configuration file generated and downloaded.";
+            updateAnnouncer("Configuration file generated and downloaded.");
         }
 
         // DoH Resolver
@@ -823,11 +834,11 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
             
             resBox.innerText = "Querying Cloudflare...";
             try {
-                const response = await fetch(\`https://cloudflare-dns.com/dns-query?name=\${domain}&type=A\`, {
+                const response = await fetch(`https://cloudflare-dns.com/dns-query?name=${domain}&type=A`, {
                     headers: { 'Accept': 'application/dns-json' }
                 });
                 const data = await response.json();
-                resBox.innerText = data.Answer ? data.Answer.map(a => \`\${a.name} -> \${a.data}\`).join('\\n') : "No records found.";
+                resBox.innerText = data.Answer ? data.Answer.map(a => `${a.name} -> ${a.data}`).join('\n') : "No records found.";
             } catch (e) {
                 resBox.innerText = "Resolution failed.";
             }
@@ -850,15 +861,15 @@ successfully downloaded text file (SHA: 8028a06a3534b7748e619d4c80ece38a0cbbb70f
             const text = document.getElementById('feedback-text').value;
             if (!text) return alert("Please enter feedback.");
             
-            announcer.innerText = "Sending feedback via Nostr...";
+            updateAnnouncer("Sending feedback via Nostr...");
             const success = await sendNostrFeedback(text);
             
             if (success) {
-                announcer.innerText = "Feedback sent successfully.";
+                updateAnnouncer("Feedback sent successfully.");
                 document.getElementById('feedback-text').value = '';
                 closeOverlay('feedback-overlay');
             } else {
-                announcer.innerText = "Failed to send feedback.";
+                updateAnnouncer("Failed to send feedback.");
                 alert("Nostr relay error. Please try again later.");
             }
         }
