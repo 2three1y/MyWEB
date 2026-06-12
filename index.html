@@ -898,15 +898,13 @@
                 const pool = new SimplePool();
                 const pubs = pool.publish(NOSTR_RELAYS, event);
                 
-                try {
-                   await Promise.any(pubs);
-                } catch (e) {
-                   console.error("All relays failed", e);
-                   return false;
-                }
+                // FIX: Use Promise.allSettled to ensure all relay connections are handled properly,
+                // and then resolve if any successfully published.
+                const results = await Promise.allSettled(pubs);
+                const success = results.some(r => r.status === 'fulfilled');
                 
                 pool.close(NOSTR_RELAYS);
-                return true;
+                return success;
             } catch (err) {
                 console.error("Nostr implementation error:", err);
                 return false;
