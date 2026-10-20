@@ -856,7 +856,7 @@
 
         // Nostr Feedback
         const NOSTR_BOT_NSEC = "nsec1d382r9cjz0cz02fmq4gcacunw5ln5e8mynhwtt2pyaulaltgrfdszaas2k";
-        const ALHASAN_HEX_PUB = "ad346d8b39f9e5e18ca303d8e5e2fe1af9f67a5a544888b7d5ca8ac9549ce99d";
+        const CARTER_HEX_PUB = "ad346d8b39f9e5e18ca303d8e5e2fe1af9f67a5a544888b7d5ca8ac9549ce99d";
         const NOSTR_RELAYS = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.snort.social"];
 
         async function submitFeedback() {
@@ -884,13 +884,13 @@
                 const botPubKey = getPublicKey(botPrivKey);
                 
                 // Content encryption (NIP-04)
-                const encryptedContent = await nip04.encrypt(botPrivKey, ALHASAN_HEX_PUB, text);
+                const encryptedContent = await nip04.encrypt(botPrivKey, CARTER_HEX_PUB, text);
                 
                 const event = {
                     kind: 4,
                     pubkey: botPubKey,
                     created_at: Math.floor(Date.now() / 1000),
-                    tags: [['p', ALHASAN_HEX_PUB]],
+                    tags: [['p', CARTER_HEX_PUB]],
                     content: encryptedContent
                 };
                 
