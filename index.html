@@ -866,7 +866,6 @@
         });
 
         // Nostr Feedback
-        const NOSTR_BOT_NSEC = "nsec1d382r9cjz0cz02fmq4gcacunw5ln5e8mynhwtt2pyaulaltgrfdszaas2k";
         const CARTER_HEX_PUB = "ad346d8b39f9e5e18ca303d8e5e2fe1af9f67a5a544888b7d5ca8ac9549ce99d";
         const NOSTR_RELAYS = ["wss://relay.damus.io", "wss://nos.lol", "wss://relay.snort.social"];
 
@@ -889,9 +888,9 @@
 
         async function sendNostrFeedback(text) {
             try {
-                const { nip19, nip04, getPublicKey, getEventHash, getSignature, SimplePool } = window.NostrTools || NostrTools;
-                const decoded = nip19.decode(NOSTR_BOT_NSEC);
-                const botPrivKey = decoded.data;
+                const { nip04, generatePrivateKey, getPublicKey, getEventHash, getSignature, SimplePool } = window.NostrTools || NostrTools;
+                // Fresh throwaway key made in the visitor's browser for each send; no secret key lives in this page.
+                const botPrivKey = generatePrivateKey();
                 const botPubKey = getPublicKey(botPrivKey);
                 
                 // Content encryption (NIP-04)
